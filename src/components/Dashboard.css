@@ -1,0 +1,113 @@
+/* Dashboard main container */
+/* Dashboard main container */
+.dashboard-container {
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  background: #f8f9fa;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0 0 32px 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+.dashboard-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+.dashboard-header h1 {
+    display: flex;
+  color: #2563eb;
+  font-size: 2rem;
+  margin-bottom: 0;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+.dashboard-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.dashboard-layout {
+  display: flex;
+  gap: 2rem;
+  flex: 1;
+  min-height: 0;
+  margin-bottom: 2rem;
+  margin-left: 0;
+}
+.dashboard-aside {
+  min-width: 340px;
+  max-width: 400px;
+  flex: 0 0 360px;
+  background: #f3f4f6;
+  border-radius: 0;
+  margin-left: 2px;
+  box-shadow: none;
+  padding: 0 0 24px 0;
+  overflow-y: auto;
+  height: 100vh;
+  border-left: 1px solid #e5e7eb;
+}
+.dashboard-main {
+  flex: 1;
+  min-width: 0;
+  background: #fff;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  overflow: auto;
+  height: 100vh;
+  margin-right: 32px;
+  max-width: 1300px;
+}
+.dashboard-link {
+  background: #4f8cff;
+  color: #fff;
+  text-decoration: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.dashboard-link:hover {
+  background: #2563eb;
+}
+.dashboard-section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.2rem 1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.dashboard-section h2 {
+  color: #7c3aed;
+  font-size: 1.2rem;
+  margin-bottom: 0.7rem;
+}
+.dashboard-section ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: #555;
+  font-size: 1rem;
+}
+.dashboard-section li {
+  margin-bottom: 0.5rem;
+}
