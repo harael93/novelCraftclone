@@ -58,19 +58,34 @@ function AIChatDropdown({ onInsertAIResponse, buttonStyle, chapters, characterLi
         style={buttonStyle || { padding: '0.5rem 1rem', borderRadius: 6, background: '#2563eb', color: '#fff', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}
         onClick={() => setOpen(o => !o)}
       >
-        f4ac Chat with AI
+        Chat with AI
       </button>
       {open && (
         <div style={{ position: 'absolute', top: '110%', right: 0, width: 520, background: '#fff', border: '1px solid #e0e0e0', borderRadius: 8, boxShadow: '0 2px 12px rgba(0,0,0,0.08)', zIndex: 100, padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
           <div style={{ maxHeight: 220, overflowY: 'auto', marginBottom: '0.5rem', fontSize: '0.98rem' }}>
             {messages.length === 0 && <div style={{ color: '#888' }}>Start a conversation...</div>}
             {messages.map((msg, idx) => (
-              <div key={idx} style={{ marginBottom: '0.5rem', textAlign: msg.sender === 'user' ? 'right' : 'left', position: 'relative' }}>
+              <div key={idx} style={{ marginBottom: '0.5rem', textAlign: msg.sender === 'user' ? 'right' : 'left', position: 'relative', paddingRight: msg.sender === 'ai' && onInsertAIResponse ? 120 : undefined }}>
                 <span style={{ color: msg.sender === 'user' ? '#2563eb' : '#059669', fontWeight: 'bold' }}>{msg.sender === 'user' ? 'You' : 'AI'}:</span>
                 <span style={{ marginLeft: 6 }}>{msg.text}</span>
                 {msg.sender === 'ai' && onInsertAIResponse && (
                   <button
-                    style={{ marginLeft: 10, fontSize: '0.95em', padding: '0.2em 0.7em', borderRadius: 4, border: '1px solid #059669', background: '#e0f7ef', color: '#059669', cursor: 'pointer', position: 'absolute', right: 0, top: 0 }}
+                    style={{
+                      marginLeft: 10,
+                      fontSize: '0.95em',
+                      padding: '0.2em 0.7em',
+                      borderRadius: 4,
+                      border: '1px solid #059669',
+                      background: '#e0f7ef',
+                      color: '#059669',
+                      cursor: 'pointer',
+                      position: 'sticky',
+                      right: 0,
+                      top: 0,
+                      zIndex: 20,
+                      float: 'right',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.07)'
+                    }}
                     onClick={() => onInsertAIResponse(msg.text)}
                   >
                     795 Add to Writer
