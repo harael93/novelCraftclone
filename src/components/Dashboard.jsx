@@ -101,23 +101,9 @@ function Dashboard() {
 
     return (
         <div className="dashboard-container">
-            <header className="dashboard-header" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '2rem 0' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                    <button onClick={saveProgress} style={{marginRight: 8}}>💾 Save Progress</button>
-                    <button onClick={loadProgress}>📂 Load Progress</button>
+            <header className="dashboard-header">
+                <div className="dashboard-ai-chat-launcher">
                     <AIChatDropdown
-                        buttonStyle={{
-                            background: 'linear-gradient(90deg, #6a11cb 0%, #2575fc 100%)',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '8px',
-                            padding: '0.75rem 1.5rem',
-                            fontSize: '1rem',
-                            fontWeight: 'bold',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                            cursor: 'pointer',
-                            transition: 'background 0.2s'
-                        }}
                         onInsertAIResponse={handleInsertAIResponse}
                         chapters={chapters}
                         characterList={characterList}
@@ -126,29 +112,24 @@ function Dashboard() {
                         pendingAIPrompt={pendingAIPrompt}
                         setPendingAIPrompt={setPendingAIPrompt}
                     />
-                        <button
-                            style={{
-                                padding: '0.5rem 1rem',
-                                borderRadius: 6,
-                                background: '#e0e7ff',
-                                color: '#3730a3',
-                                border: 'none',
-                                fontWeight: 'bold',
-                                cursor: 'pointer',
-                                marginLeft: 8
-                            }}
-                            title="Send highlighted text to AI"
-                            onClick={() => {
-                                if (editor) {
-                                    const selection = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to, '\n');
-                                    if (selection.trim()) {
-                                        setPendingAIPrompt({ type: 'highlight', text: selection });
-                                    }
+                </div>
+                <div className="dashboard-header-controls">
+                    <button onClick={saveProgress}>💾 Save Progress</button>
+                    <button onClick={loadProgress}>📂 Load Progress</button>
+                    <button
+                        className="dashboard-highlight-to-ai"
+                        title="Send highlighted text to AI"
+                        onClick={() => {
+                            if (editor) {
+                                const selection = editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to, '\n');
+                                if (selection.trim()) {
+                                    setPendingAIPrompt({ type: 'highlight', text: selection });
                                 }
-                            }}
-                        >
-                            📨 Send Highlighted Text to AI
-                        </button>
+                            }
+                        }}
+                    >
+                        📨 Send Highlighted Text to AI
+                    </button>
                 </div>
             </header>
             <div className="dashboard-layout">

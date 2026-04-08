@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 
 function AIChatDropdown({ onInsertAIResponse, buttonStyle, chapters, characterList, synopsis, instructions, pendingAIPrompt, setPendingAIPrompt }) {
@@ -7,6 +7,16 @@ function AIChatDropdown({ onInsertAIResponse, buttonStyle, chapters, characterLi
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [pendingContext, setPendingContext] = useState(null); // Holds scene beat or highlighted text
+
+  // Ref for chat scroll
+  const chatContainerRef = useRef(null);
+
+  // Scroll chat to bottom when messages change
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages, loading]);
 
   // Compose full context for every prompt
   const getFullPrompt = (userPrompt) => {
@@ -38,14 +48,57 @@ function AIChatDropdown({ onInsertAIResponse, buttonStyle, chapters, characterLi
     setInput('');
     setPendingContext(null);
     setLoading(true);
+    let aiText = '';
     try {
-      const res = await fetch('http://localhost:3000/mistral', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://192.168.12.197:8030/api/chat';
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: promptToSend, stream: false }),
+        body: JSON.stringify({ model: "mistral", prompt: promptToSend, stream: true}),
       });
-      const data = await res.json();
-      setMessages(msgs => [...msgs, { sender: 'ai', text: data.response || data.result || 'No response.' }]);
+      if (!res.body) throw new Error('No response body');
+      const reader = res.body.getReader();
+      let decoder = new TextDecoder();
+      let done = false;
+      let buffer = '';
+      // Add a placeholder message for streaming
+      setMessages(msgs => [...msgs, { sender: 'ai', text: '' }]);
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        if (value) {
+          buffer += decoder.decode(value, { stream: true });
+          // Ollama streams JSON lines, so split by newlines
+          let lines = buffer.split('\n');
+          buffer = lines.pop(); // last line may be incomplete
+          for (let line of lines) {
+            if (!line.trim()) continue;
+            try {
+              const json = JSON.parse(line);
+              if (json.response) {
+                aiText += json.response;
+                setMessages(msgs => {
+                  // Update the last AI message with the new text
+                  const updated = [...msgs];
+                  for (let i = updated.length - 1; i >= 0; i--) {
+                    if (updated[i].sender === 'ai') {
+                      updated[i] = { ...updated[i], text: aiText };
+                      break;
+                    }
+                  }
+                  return updated;
+                });
+              }
+            } catch (e) {
+              // Ignore JSON parse errors for incomplete lines
+            }
+          }
+        }
+      }
+      // If nothing streamed, show fallback
+      if (!aiText) {
+        setMessages(msgs => [...msgs, { sender: 'ai', text: 'No response.' }]);
+      }
     } catch (err) {
       setMessages(msgs => [...msgs, { sender: 'ai', text: 'Error contacting AI.' }]);
     }
@@ -53,16 +106,19 @@ function AIChatDropdown({ onInsertAIResponse, buttonStyle, chapters, characterLi
   };
 
   return (
-    <div style={{ position: 'relative', display: 'inline-block' }}>
+    <div className="ai-chat-dropdown-root">
       <button
-        style={buttonStyle || { padding: '0.5rem 1rem', borderRadius: 6, background: '#2563eb', color: '#fff', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}
+        className="ai-chat-dropdown-button"
         onClick={() => setOpen(o => !o)}
       >
         Chat with AI
       </button>
       {open && (
-        <div style={{ position: 'absolute', top: '110%', right: 0, width: 520, background: '#fff', border: '1px solid #e0e0e0', borderRadius: 8, boxShadow: '0 2px 12px rgba(0,0,0,0.08)', zIndex: 100, padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
-          <div style={{ maxHeight: 220, overflowY: 'auto', marginBottom: '0.5rem', fontSize: '0.98rem' }}>
+        <div className="ai-chat-dropdown-panel">
+          <div
+            ref={chatContainerRef}
+            style={{ maxHeight: 220, overflowY: 'auto', marginBottom: '0.5rem', fontSize: '0.98rem' }}
+          >
             {messages.length === 0 && <div style={{ color: '#888' }}>Start a conversation...</div>}
             {messages.map((msg, idx) => (
               <div key={idx} style={{ marginBottom: '0.5rem', textAlign: msg.sender === 'user' ? 'right' : 'left', position: 'relative', paddingRight: msg.sender === 'ai' && onInsertAIResponse ? 120 : undefined }}>
@@ -88,7 +144,7 @@ function AIChatDropdown({ onInsertAIResponse, buttonStyle, chapters, characterLi
                     }}
                     onClick={() => onInsertAIResponse(msg.text)}
                   >
-                    795 Add to Writer
+                    ➤ Add to Writer
                   </button>
                 )}
               </div>
@@ -114,7 +170,7 @@ function AIChatDropdown({ onInsertAIResponse, buttonStyle, chapters, characterLi
             <button
               onClick={handleSend}
               style={{ padding: '0.5rem 1.2rem', borderRadius: 4, background: '#2563eb', color: '#fff', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}
-              disabled={loading}
+              disabled={loading || (!input.trim() && !pendingContext)}
             >
               {loading ? '...' : 'Send'}
             </button>

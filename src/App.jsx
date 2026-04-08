@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+
 import './App.css';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import NestedTodoList from './components/NestedTodoList.jsx';
@@ -20,7 +19,11 @@ function App() {
           element={
             <div style={{ textAlign: 'center', marginTop: '4rem' }}>
               <h1>Welcome to NovelCraft</h1>
-              <Link to="/dashboard" style={{ display: 'inline-block', marginTop: '2rem', background: '#2563eb', color: '#fff', padding: '1rem 2rem', borderRadius: '8px', fontSize: '1.2rem', textDecoration: 'none', fontWeight: '500' }}>
+              <Link
+                to="/dashboard"
+                style={{ display: 'inline-block', marginTop: '2rem', background: '#2563eb', color: '#fff', padding: '1rem 2rem', borderRadius: '8px', fontSize: '1.2rem', textDecoration: 'none', fontWeight: '500' }}
+                // ...existing code...
+              >
                 Go to Dashboard
               </Link>
             </div>
@@ -30,6 +33,7 @@ function App() {
         <Route path="/todo" element={<NestedTodoList />} />
         <Route path="/editor" element={<ProseMirrorBookEditor />} />
       </Routes>
-      </Router>
-  );}
+    </Router>
+  );
+}
 export default App;

@@ -1,0 +1,7 @@
+tunnel: 02f9038c-77c2-480a-a7d5-5cb67223441f
+credentials-file: /etc/cloudflared/02f9038c-77c2-480a-a7d5-5cb67223441f.json
+# Example: forward traffic to local service
+ingress:
+  - hostname: writingapp.deployedlogic.site
+    service: http://192.168.12.197:8020
+  - service: http_status:404
